@@ -59,8 +59,8 @@ cd $HOME/klipper_config/$backupfolder
 #rm main.zip >/dev/null 2>&1
 #find . -type f -mindepth 2 -exec mv -i -- {} . \; >/dev/null 2>&1
 #rm -r */ >/dev/null 2>&1
-wget https://raw.githubusercontent.com/Damada42/KlipperBackupHandle/main/handlebackup.sh
-wget https://raw.githubusercontent.com/Damada42/KlipperBackupHandle/main/Backup.sh
+wget https://raw.githubusercontent.com/Damada42/KlipperBackupHandle/main/handlebackup.sh >/dev/null 2>&1
+wget https://raw.githubusercontent.com/Damada42/KlipperBackupHandle/main/Backup.sh >/dev/null 2>&1
 
 if [ ! -e $filename ]; then
   touch $filename

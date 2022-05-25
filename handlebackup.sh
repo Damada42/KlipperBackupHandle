@@ -76,6 +76,9 @@ else
     fi
     Backupafterprinting="0"
     #start BACKUP Script
+    echo "savemode: $savemode"
+    echo "Dateiname: $targetname"
+    echo "bashbefehl: Backup.sh $savemode $targetname"
     bash Backup.sh $savemode $targetname
   fi
 fi
