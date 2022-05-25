@@ -14,7 +14,7 @@ backupmode="zip"
 imputprintername=""
 filename='backupvariables.ini'
 
-DIRstartscript="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+DIRstartscript="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )" >/dev/null 2>&1
 echo $DIRstartscript
 if [ -z "$2" ] && [ ! -z "$1" ]; then
   if [ "$1" = "zip" ] || [ "$1" = "folder" ]; then
@@ -45,10 +45,6 @@ else
   if [ -z "$(sed -nr "/^\[variables\]/ { :l /^BackupAfterPrint[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" $filename)" ]; then
     touch $filename
     echo "BackupAfterPrint = 0">> $filename
-  fi
-  if [ -z "$(sed -nr "/^\[variables\]/ { :l /^Targetfilename[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" $filename)" ]; then
-    touch $filename
-    echo "Targetfilename = $targetname">> $filename
   fi
   Backupafterprinting=$(sed -nr "/^\[variables\]/ { :l /^BackupAfterPrint[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" $filename)
 fi
@@ -84,7 +80,7 @@ else
 fi
 if  [ "${backupmode}" = "zip" ]; then
   cd $DIRstartscript
-  rm $targetname
+  rm $targetname >/dev/null 2>&1
 fi
 sed -i -e "/^\[variables\]/,/^\[.*\]/ s|^\(BackupAfterPrint[ \t]*=[ \t]*\).*$|\1$Backupafterprinting|" $filename
 sed -i -e "/^\[variables\]/,/^\[.*\]/ s|^\(Targetfilename[ \t]*=[ \t]*\).*$|\1$targetname|" $filename

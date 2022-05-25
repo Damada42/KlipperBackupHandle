@@ -2,8 +2,8 @@
 backupmode="nas"
 filename=""
 inifilename='backupvariables.ini'
-DIRsource="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-echo $DIRsource
+DIRsource="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )" >/dev/null 2>&1
+echo "der Pfad ist: $DIRsource"
 if [ -z "$(sed -nr "/^\[variables\]/ { :l /^usbbackupfolder[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" $inifilename)" ] || [ -z "$(sed -nr "/^\[variables\]/ { :l /^logfilesbackupfolder[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" $inifilename)" ] || [ -z "$(sed -nr "/^\[variables\]/ { :l /^nasbackupfolder[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" $inifilename)" ]; then
   echo "Backup abourt because path value not ins ini File."
 else
@@ -41,12 +41,13 @@ else
     fi
   else
     if [ -z "$filename" ]; then
-      #rm -rv $usbbackupfolder/klipper_config 1>> $logfilesbackupfolder/log_ready.log 2>> $logfilesbackupfolder/log_fail.log
-      #sleep 1s
-      #cp -rpv $HOME/klipper_config/ $usbbackupfolder/klipper_config 1>> $logfilesbackupfolder/log_ready.log 2>> $logfilesbackupfolder/log_fail.log
+      echo "USB folder löschen $usbbackupfolder/klipper_config"
+      rm -rfv $usbbackupfolder/klipper_config 1>> $logfilesbackupfolder/log_ready.log 2>> $logfilesbackupfolder/log_fail.log
+      sleep 1s
+      cp -rpv $HOME/klipper_config/ $usbbackupfolder/klipper_config 1>> $logfilesbackupfolder/log_ready.log 2>> $logfilesbackupfolder/log_fail.log
       echo "USB folder backup"
     else
-      #cp -rpv $DIRsource/$filename $usbbackupfolder 1>> $logfilesbackupfolder/log_ready.log 2>> $logfilesbackupfolder/log_fail.log
+      cp -rpv $DIRsource/$filename $usbbackupfolder 1>> $logfilesbackupfolder/log_ready.log 2>> $logfilesbackupfolder/log_fail.log
       echo "USB zip backup"
     fi
   fi
