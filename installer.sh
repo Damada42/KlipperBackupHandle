@@ -46,8 +46,8 @@ if [ ! -z "$inputnas" ] ; then
 fi
 echo "The NAS path are: $logfilesbackupfolder"
 mkdir $logfilesbackupfolder >/dev/null 2>&1
-touch $logfilesbackupfolder/crazyfile.log >/dev/null 2>&1
-touch $logfilesbackupfolder/crazyfile1.log >/dev/null 2>&1
+touch $logfilesbackupfolder/log_ready.log >/dev/null 2>&1
+touch $logfilesbackupfolder/log_fail.log >/dev/null 2>&1
 
 echo "########################################################################"
 echo "#######  now it run the rest from the instalation please wait!  ########"

@@ -14,8 +14,9 @@ backupmode="zip"
 imputprintername=""
 filename='backupvariables.ini'
 
-DIRstartscript="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )" >/dev/null 2>&1
+DIRstartscript=$HOME/klipper_config/backuphandle
 echo $DIRstartscript
+cd $DIRstartscript
 if [ -z "$2" ] && [ ! -z "$1" ]; then
   if [ "$1" = "zip" ] || [ "$1" = "folder" ]; then
     backupmode=$1
@@ -32,26 +33,26 @@ if [ "$backupmode" = "zip" ]; then
   now=`date +"%Y%m%d_%H%M_"`
   targetname="${now}BackupKlipper${imputprintername}.zip"
   echo $targetname
-  zip -r $targetname $HOME/klipper_config/
+  zip -r $targetname $HOME/klipper_config/  >/dev/null 2>&1
 else
   targetname=""
 fi
 if [ ! -e $filename ]; then
-  touch $filename
-  echo "[variables]">> $filename
-  echo "BackupAfterPrint = 0">> $filename
-  echo "Targetfilename = $targetname">> $filename
+  touch $filename  >/dev/null 2>&1
+  echo "[variables]">> $filename  >/dev/null 2>&1
+  echo "BackupAfterPrint = 0">> $filename  >/dev/null 2>&1
+  echo "Targetfilename = $targetname">> $filename  >/dev/null 2>&1
 else
   if [ -z "$(sed -nr "/^\[variables\]/ { :l /^BackupAfterPrint[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" $filename)" ]; then
-    touch $filename
-    echo "BackupAfterPrint = 0">> $filename
+    touch $filename  >/dev/null 2>&1
+    echo "BackupAfterPrint = 0">> $filename  >/dev/null 2>&1
   fi
   Backupafterprinting=$(sed -nr "/^\[variables\]/ { :l /^BackupAfterPrint[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" $filename)
 fi
 if [ ! "$imputprintername" = "" ]; then
   imputprintername="_$imputprintername"
 fi
-responsedata=$(curl -s 'http://localhost/printer/objects/query?print_stats=state'  | jq -r '.result.status.print_stats.state')
+responsedata=$(curl -s 'http://localhost/printer/objects/query?print_stats=state'  | jq -r '.result.status.print_stats.state')  >/dev/null 2>&1
 echo "$responsedata"
 if [ -z "$responsedata" ]; then
   echo "!!!!No state from printer OR no connection to moonraker !!!!!"
@@ -72,9 +73,9 @@ else
     fi
     Backupafterprinting="0"
     #start BACKUP Script
-    echo "savemode: $savemode"
-    echo "Dateiname: $targetname"
-    echo "bashbefehl: Backup.sh $savemode $targetname"
+#    echo "savemode: $savemode"
+#    echo "Dateiname: $targetname"
+#    echo "bashbefehl: Backup.sh $savemode $targetname"
     bash Backup.sh $savemode $targetname
   fi
 fi
