@@ -60,7 +60,7 @@ echo "$responsedata"
 if [ -z "$responsedata" ]; then
   echo "!!!!No state from printer OR no connection to moonraker !!!!!"
 else
-  if ! [ "${responsedata}" = "standby" ]; then
+  if [ "${responsedata}" = "printing" ]; then
     echo "Backup has been canceled because printer running"
     Backupafterprinting="1"
   else
