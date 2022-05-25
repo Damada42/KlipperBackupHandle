@@ -42,6 +42,14 @@ if [ ! -e $filename ]; then
   echo "BackupAfterPrint = 0">> $filename
   echo "Targetfilename = $targetname">> $filename
 else
+  if [ -z "$(sed -nr "/^\[variables\]/ { :l /^BackupAfterPrint[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" $filename)" ]; then
+    touch $filename
+    echo "BackupAfterPrint = 0">> $filename
+  fi
+  if [ -z "$(sed -nr "/^\[variables\]/ { :l /^Targetfilename[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" $filename)" ]; then
+    touch $filename
+    echo "Targetfilename = $targetname">> $filename
+  fi
   Backupafterprinting=$(sed -nr "/^\[variables\]/ { :l /^BackupAfterPrint[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" $filename)
 fi
   if [ ! "$imputprintername" = "" ]; then

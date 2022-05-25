@@ -1,39 +1,49 @@
 #!/bin/bash
 backupmode="nas"
 filename=""
-devicepathusb="/media/timeusb/Backup"
-devicepathnas="$HOME/shares/klipper/Backup"
-devicepathlogfiles="$HOME/klipper_config/Backuplogs"
+inifilename='backupvariables.ini'
 DIRsource="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 echo $DIRsource
-echo "`date -u`" >> $devicepathlogfiles/log_ready.log
-echo "`date -u`" >> $devicepathlogfiles/log_fail.log
-if [ -z "$2" ] && [ ! -z "$1" ]; then
-  if [ "$1" = "nas" ] || [ "$1" = "usb" ]; then
-    backupmode=$1
-  fi
-elif [ ! -z "$2" ] && [ ! -z "$1" ]; then
-  filename=$2
-  if [ "$1" = "zip" ] || [ "$1" = "folder" ]; then
-    backupmode=$1
-  fi
-fi
-if [ "$backupmode" = "nas" ]; then
-  if [ -z "$filename" ]; then
-    rm -rv $devicepathnas/klipper_config 1>> $devicepathlogfiles/log_ready.log 2>> $devicepathlogfiles/log_fail.log
-    sleep 1s ;
-    cp -rpv $HOME/klipper_config/ $devicepathnas/klipper_config 1>> $devicepathlogfiles/log_ready.log 2>> $devicepathlogfiles/log_fail.log
-  else
-    cp -rpv $DIRsource/$filename $devicepathnas 1>> $devicepathlogfiles/log_ready.log 2>> $devicepathlogfiles/log_fail.log
-  fi
+
+if [ -z "$(sed -nr "/^\[variables\]/ { :l /^usbbackupfolder[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" $inifilename)" ] || [ -z "$(sed -nr "/^\[variables\]/ { :l /^logfilesbackupfolder[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" $inifilename)" ] || [ -z "$(sed -nr "/^\[variables\]/ { :l /^nasbackupfolder[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" $inifilename)" ]; then
+  echo "Backup abourt because path value not ins ini File."
 else
-  if [ -z "$filename" ]; then
-    rm -rv $devicepathusb/klipper_config 1>> $devicepathlogfiles/log_ready.log 2>> $devicepathlogfiles/log_fail.log
-    sleep 1s
-    cp -rpv $HOME/klipper_config/ $devicepathusb/klipper_config 1>> $devicepathlogfiles/log_ready.log 2>> $devicepathlogfiles/log_fail.log
-  else
-    cp -rpv $DIRsource/$filename $devicepathusb 1>> $devicepathlogfiles/log_ready.log 2>> $devicepathlogfiles/log_fail.log
+  usbbackupfolder=$(sed -nr "/^\[variables\]/ { :l /^usbbackupfolder[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" $inifilename)
+  nasbackupfolder=$(sed -nr "/^\[variables\]/ { :l /^nasbackupfolder[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" $inifilename)
+  logfilesbackupfolder=$(sed -nr "/^\[variables\]/ { :l /^logfilesbackupfolder[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" $inifilename)
+  echo "`date -u`" >> $logfilesbackupfolder/log_ready.log
+  echo "`date -u`" >> $logfilesbackupfolder/log_fail.log
+  if [ -z "$2" ] && [ ! -z "$1" ]; then
+    if [ "$1" = "nas" ] || [ "$1" = "usb" ]; then
+      backupmode=$1
+    fi
+  elif [ ! -z "$2" ] && [ ! -z "$1" ]; then
+    filename=$2
+    if [ "$1" = "zip" ] || [ "$1" = "folder" ]; then
+      backupmode=$1
+    fi
   fi
+  if [ "$backupmode" = "nas" ]; then
+    if [ -z "$filename" ]; then
+      #rm -rv $nasbackupfolder/klipper_config 1>> $logfilesbackupfolder/log_ready.log 2>> $logfilesbackupfolder/log_fail.log
+      #sleep 1s ;
+      #cp -rpv $HOME/klipper_config/ $nasbackupfolder/klipper_config 1>> $logfilesbackupfolder/log_ready.log 2>> $logfilesbackupfolder/log_fail.log
+      echo "NAS folder backup"
+    else
+      #cp -rpv $DIRsource/$filename $nasbackupfolder 1>> $logfilesbackupfolder/log_ready.log 2>> $logfilesbackupfolder/log_fail.log
+      echo "NAS zip backup"
+    fi
+  else
+    if [ -z "$filename" ]; then
+      #rm -rv $usbbackupfolder/klipper_config 1>> $logfilesbackupfolder/log_ready.log 2>> $logfilesbackupfolder/log_fail.log
+      #sleep 1s
+      #cp -rpv $HOME/klipper_config/ $usbbackupfolder/klipper_config 1>> $logfilesbackupfolder/log_ready.log 2>> $logfilesbackupfolder/log_fail.log
+      echo "USB folder backup"
+    else
+      #cp -rpv $DIRsource/$filename $usbbackupfolder 1>> $logfilesbackupfolder/log_ready.log 2>> $logfilesbackupfolder/log_fail.log
+      echo "USB zip backup"
+    fi
+  fi
+  echo "$(tail -65 $logfilesbackupfolder/log_ready.log)" > $logfilesbackupfolder/log_ready.log
+  echo "$(tail -65 $logfilesbackupfolder/log_fail.log)" > $logfilesbackupfolder/log_fail.log
 fi
-echo "$(tail -65 $devicepathlogfiles/log_ready.log)" > $devicepathlogfiles/log_ready.log
-echo "$(tail -65 $devicepathlogfiles/log_fail.log)" > $devicepathlogfiles/log_fail.log
