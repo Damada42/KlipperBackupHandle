@@ -22,7 +22,8 @@ if [ ! -z "$inputusb" ] ; then
     usbbackupfolder=/media/$inputusb
 fi
 echo "The USB path are: $usbbackupfolder"
-sudo mkdir $usbbackupfolder  #>/dev/null 2>&1
+sudo mkdir $usbbackupfolder  >/dev/null 2>&1
+sudo chmod 777 $usbbackupfolder >/dev/null 2>&1
 
 echo "########################################################################"
 echo "Please enter NAS path to creat it in '$HOME/shares' folder: "
@@ -43,9 +44,9 @@ if [ ! -z "$inputnas" ] ; then
     logfilesbackupfolder=$HOME/klipper_config/$inputlogfiles
 fi
 echo "The NAS path are: $logfilesbackupfolder"
-mkdir $logfilesbackupfolder >/dev/null 2>&1
-touch $logfilesbackupfolder/log_ready.log >/dev/null 2>&1
-touch $logfilesbackupfolder/log_fail.log >/dev/null 2>&1
+mkdir $logfilesbackupfolder
+touch $logfilesbackupfolder/log_ready.log
+touch $logfilesbackupfolder/log_fail.log
 
 echo "########################################################################"
 echo "#######  now it run the rest from the instalation please wait!  ########"
@@ -62,5 +63,6 @@ if [ ! -e $variablefilename ]; then
   echo "usbbackupfolder = $usbbackupfolder">> $variablefilename
   echo "nasbackupfolder = $nasbackupfolder">> $variablefilename
   echo "logfilesbackupfolder = $logfilesbackupfolder">> $variablefilename
+  echo "BackupAfterPrint = 0">> $variablefilename
 fi
 

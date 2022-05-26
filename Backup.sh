@@ -13,6 +13,7 @@ else
   nasbackupfolder=$(sed -nr "/^\[variables\]/ { :l /^nasbackupfolder[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" $variablefilename)
   logfilesbackupfolder=$(sed -nr "/^\[variables\]/ { :l /^logfilesbackupfolder[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" $variablefilename)
   cd $DIRstartscript
+  echo "$PWD"
   echo "`date -u`" >> $logfilesbackupfolder/log_ready.log
   echo "`date -u`" >> $logfilesbackupfolder/log_fail.log
   if [ -z "$2" ] && [ ! -z "$1" ]; then
@@ -49,6 +50,7 @@ else
       echo "USB folder backup"
     else
       cp -rpv $DIRstartscript/$filename $usbbackupfolder 1>> $logfilesbackupfolder/log_ready.log 2>> $logfilesbackupfolder/log_fail.log
+
       echo "USB zip backup"
     fi
   fi

@@ -26,19 +26,10 @@ elif [ ! -z "$2" ] && [ ! -z "$1" ]; then
     backupmode=$1
   fi
 fi
-if [ "$backupmode" = "zip" ]; then
-  now=`date +"%Y%m%d_%H%M_"`
-  targetname="${now}BackupKlipper${imputprintername}.zip"
-  echo $targetname
-  zip -r $targetname $HOME/klipper_config/  >/dev/null 2>&1
-else
-  targetname=""
-fi
 if [ ! -e $variablefilename ]; then
   touch $variablefilename  >/dev/null 2>&1
   echo "[variables]">> $variablefilename  >/dev/null 2>&1
   echo "BackupAfterPrint = 0">> $variablefilename  >/dev/null 2>&1
-  echo "Targetvariablefilename = $targetname">> $variablefilename  >/dev/null 2>&1
 else
   if [ -z "$(sed -nr "/^\[variables\]/ { :l /^BackupAfterPrint[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" $variablefilename)" ]; then
     touch $variablefilename  >/dev/null 2>&1
@@ -53,6 +44,14 @@ else
 fi
 echo $DIRstartscript
 cd $DIRstartscript
+if [ "$backupmode" = "zip" ]; then
+  now=`date +"%Y%m%d_%H%M_"`
+  targetname="${now}BackupKlipper${imputprintername}.zip"
+  echo $targetname
+  zip -r $targetname $HOME/klipper_config/  >/dev/null 2>&1
+else
+  targetname=""
+fi
 if [ ! "$imputprintername" = "" ]; then
   imputprintername="_$imputprintername"
 fi
@@ -73,18 +72,16 @@ else
       fi
     else
       echo "makeing zip backup after print is finished"
-      targetname=$(sed -nr "/^\[variables\]/ { :l /^Targetvariablefilename[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" $variablefilename)
     fi
     Backupafterprinting="0"
     #start BACKUP Script
-#    echo "savemode: $savemode"
-#    echo "Dateiname: $targetname"
-#    echo "bashbefehl: Backup.sh $savemode $targetname"
+    echo Backup.sh $savemode $targetname
     bash Backup.sh $savemode $targetname
   fi
 fi
 if  [ "${backupmode}" = "zip" ]; then
   cd $DIRstartscript
+  sleep 5s
   rm $targetname >/dev/null 2>&1
 fi
 sed -i -e "/^\[variables\]/,/^\[.*\]/ s|^\(BackupAfterPrint[ \t]*=[ \t]*\).*$|\1$Backupafterprinting|" $variablefilename
