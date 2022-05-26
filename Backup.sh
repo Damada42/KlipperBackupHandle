@@ -1,16 +1,18 @@
 #!/bin/bash
 backupmode="usb"
 filename=""
-inifilename='backupvariables.ini'
-DIRstartscript=$HOME/klipper_config/backuphandle
-#echo $DIRstartscript
-cd $DIRstartscript
-if [ -z "$(sed -nr "/^\[variables\]/ { :l /^usbbackupfolder[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" $inifilename)" ] || [ -z "$(sed -nr "/^\[variables\]/ { :l /^logfilesbackupfolder[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" $inifilename)" ] || [ -z "$(sed -nr "/^\[variables\]/ { :l /^nasbackupfolder[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" $inifilename)" ]; then
-  echo "Backup abourt because path value not ins ini File."
+variablefilename="$HOME/backupinfo.ini"
+
+if [ -z "$(sed -nr "/^\[variables\]/ { :l /^usbbackupfolder[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" $variablefilename)" ] || [ -z "$(sed -nr "/^\[variables\]/ { :l /^logfilesbackupfolder[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" $variablefilename)" ] || [ -z "$(sed -nr "/^\[variables\]/ { :l /^nasbackupfolder[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" $variablefilename)" ]; then
+  echo "Backup abourt because path values not ins 'backupinfo.ini' File."
+elif [  -z "$(sed -nr "/^\[variables\]/ { :l /^backuphandlefolder[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" $variablefilename)" ]; then
+  echo "STOPPING BACKUP because no 'backuphandlefolder' in file 'backupinfo.ini'!!! Please insert manuel!! "
 else
-  usbbackupfolder=$(sed -nr "/^\[variables\]/ { :l /^usbbackupfolder[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" $inifilename)
-  nasbackupfolder=$(sed -nr "/^\[variables\]/ { :l /^nasbackupfolder[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" $inifilename)
-  logfilesbackupfolder=$(sed -nr "/^\[variables\]/ { :l /^logfilesbackupfolder[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" $inifilename)
+  DIRstartscript=$(sed -nr "/^\[variables\]/ { :l /^backuphandlefolder[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" $variablefilename)
+  usbbackupfolder=$(sed -nr "/^\[variables\]/ { :l /^usbbackupfolder[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" $variablefilename)
+  nasbackupfolder=$(sed -nr "/^\[variables\]/ { :l /^nasbackupfolder[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" $variablefilename)
+  logfilesbackupfolder=$(sed -nr "/^\[variables\]/ { :l /^logfilesbackupfolder[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" $variablefilename)
+  cd $DIRstartscript
   echo "`date -u`" >> $logfilesbackupfolder/log_ready.log
   echo "`date -u`" >> $logfilesbackupfolder/log_fail.log
   if [ -z "$2" ] && [ ! -z "$1" ]; then
@@ -36,7 +38,7 @@ else
       #cp -rpv $HOME/klipper_config/ $nasbackupfolder/klipper_config 1>> $logfilesbackupfolder/log_ready.log 2>> $logfilesbackupfolder/log_fail.log
       echo "NAS folder backup"
     else
-      #cp -rpv $DIRsource/$filename $nasbackupfolder 1>> $logfilesbackupfolder/log_ready.log 2>> $logfilesbackupfolder/log_fail.log
+      #cp -rpv $DIRstartscript/$filename $nasbackupfolder 1>> $logfilesbackupfolder/log_ready.log 2>> $logfilesbackupfolder/log_fail.log
       echo "NAS zip backup"
     fi
   else
@@ -46,7 +48,7 @@ else
       cp -rpv $HOME/klipper_config/ $usbbackupfolder/klipper_config 1>> $logfilesbackupfolder/log_ready.log 2>> $logfilesbackupfolder/log_fail.log
       echo "USB folder backup"
     else
-      cp -rpv $DIRsource/$filename $usbbackupfolder 1>> $logfilesbackupfolder/log_ready.log 2>> $logfilesbackupfolder/log_fail.log
+      cp -rpv $DIRstartscript/$filename $usbbackupfolder 1>> $logfilesbackupfolder/log_ready.log 2>> $logfilesbackupfolder/log_fail.log
       echo "USB zip backup"
     fi
   fi

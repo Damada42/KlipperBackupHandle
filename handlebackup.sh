@@ -12,11 +12,8 @@ responsedata="standby"
 savemode="usb"
 backupmode="zip"
 imputprintername=""
-filename='backupvariables.ini'
+variablefilename="$HOME/backupinfo.ini"
 
-DIRstartscript=$HOME/klipper_config/backuphandle
-echo $DIRstartscript
-cd $DIRstartscript
 if [ -z "$2" ] && [ ! -z "$1" ]; then
   if [ "$1" = "zip" ] || [ "$1" = "folder" ]; then
     backupmode=$1
@@ -37,18 +34,25 @@ if [ "$backupmode" = "zip" ]; then
 else
   targetname=""
 fi
-if [ ! -e $filename ]; then
-  touch $filename  >/dev/null 2>&1
-  echo "[variables]">> $filename  >/dev/null 2>&1
-  echo "BackupAfterPrint = 0">> $filename  >/dev/null 2>&1
-  echo "Targetfilename = $targetname">> $filename  >/dev/null 2>&1
+if [ ! -e $variablefilename ]; then
+  touch $variablefilename  >/dev/null 2>&1
+  echo "[variables]">> $variablefilename  >/dev/null 2>&1
+  echo "BackupAfterPrint = 0">> $variablefilename  >/dev/null 2>&1
+  echo "Targetvariablefilename = $targetname">> $variablefilename  >/dev/null 2>&1
 else
-  if [ -z "$(sed -nr "/^\[variables\]/ { :l /^BackupAfterPrint[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" $filename)" ]; then
-    touch $filename  >/dev/null 2>&1
-    echo "BackupAfterPrint = 0">> $filename  >/dev/null 2>&1
+  if [ -z "$(sed -nr "/^\[variables\]/ { :l /^BackupAfterPrint[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" $variablefilename)" ]; then
+    touch $variablefilename  >/dev/null 2>&1
+    echo "BackupAfterPrint = 0">> $variablefilename  >/dev/null 2>&1
   fi
-  Backupafterprinting=$(sed -nr "/^\[variables\]/ { :l /^BackupAfterPrint[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" $filename)
+  Backupafterprinting=$(sed -nr "/^\[variables\]/ { :l /^BackupAfterPrint[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" $variablefilename)
+  if [ -z "$(sed -nr "/^\[variables\]/ { :l /^backuphandlefolder[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" $variablefilename)" ]; then
+    echo "STOPPING BACKUP because no 'backuphandlefolder' in file 'backupinfo.ini'!!! Please insert manuel!! "
+  else
+    DIRstartscript=$(sed -nr "/^\[variables\]/ { :l /^backuphandlefolder[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" $variablefilename)
+  fi
 fi
+echo $DIRstartscript
+cd $DIRstartscript
 if [ ! "$imputprintername" = "" ]; then
   imputprintername="_$imputprintername"
 fi
@@ -69,7 +73,7 @@ else
       fi
     else
       echo "makeing zip backup after print is finished"
-      targetname=$(sed -nr "/^\[variables\]/ { :l /^Targetfilename[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" $filename)
+      targetname=$(sed -nr "/^\[variables\]/ { :l /^Targetvariablefilename[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" $variablefilename)
     fi
     Backupafterprinting="0"
     #start BACKUP Script
@@ -83,5 +87,5 @@ if  [ "${backupmode}" = "zip" ]; then
   cd $DIRstartscript
   rm $targetname >/dev/null 2>&1
 fi
-sed -i -e "/^\[variables\]/,/^\[.*\]/ s|^\(BackupAfterPrint[ \t]*=[ \t]*\).*$|\1$Backupafterprinting|" $filename
-sed -i -e "/^\[variables\]/,/^\[.*\]/ s|^\(Targetfilename[ \t]*=[ \t]*\).*$|\1$targetname|" $filename
+sed -i -e "/^\[variables\]/,/^\[.*\]/ s|^\(BackupAfterPrint[ \t]*=[ \t]*\).*$|\1$Backupafterprinting|" $variablefilename
+sed -i -e "/^\[variables\]/,/^\[.*\]/ s|^\(Targetvariablefilename[ \t]*=[ \t]*\).*$|\1$targetname|" $variablefilename

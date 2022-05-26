@@ -1,21 +1,19 @@
 #!/bin/bash
-backupfolder="backuphandle"
+backuphandlefolder="$HOME/klipper_config/backuphandle"
 usbbackupfolder="/media/usbstickdata"
 nasbackupfolder="$HOME/shares/klipperbackup"
 logfilesbackupfolder="$HOME/klipper_config/Backuplogs"
-variablefilename='backupvariables.ini'
+variablefilename="$HOME/backupinfo.ini"
 echo "########################################################################"
-echo "Please enter working path for backupfolder to create in '$HOME/klipper_config' path: "
+echo "Please enter working path for backuphandlefolder to create in '$HOME/klipper_config' path: "
 echo "If it is empty it use the default path 'backuphandle'. "
 read inputworking
 
 if [ ! -z "$inputworking" ] ; then
-    backupfolder=$inputworking
+    backuphandlefolder=$HOME/klipper_config/$inputworking
 fi
-echo "The working path are: $HOME/klipper_config/$backupfolder"
-mkdir $HOME/klipper_config/$backupfolder  >/dev/null 2>&1
-filename="$HOME/klipper_config/$backupfolder/$variablefilename"
-echo $filename
+echo "The working path are: $backuphandlefolder"
+mkdir $backuphandlefolder  >/dev/null 2>&1
 echo "########################################################################"
 echo "Please enter USB path to creat it in 'media' folder: "
 echo "If it is empty it use the default path 'usbstickdata'. "
@@ -53,20 +51,16 @@ echo "########################################################################"
 echo "#######  now it run the rest from the instalation please wait!  ########"
 echo "########################################################################"
 sudo apt-get -qq install jq -y && sudo apt -qq install zip -y >/dev/null 2>&1
-cd $HOME/klipper_config/$backupfolder
-#wget https://github.com/Damada42/KlipperBackupHandle/archive/refs/heads/main.zip >/dev/null 2>&1
-#unzip main.zip >/dev/null 2>&1
-#rm main.zip >/dev/null 2>&1
-#find . -type f -mindepth 2 -exec mv -i -- {} . \; >/dev/null 2>&1
-#rm -r */ >/dev/null 2>&1
+cd $backuphandlefolder
 wget https://raw.githubusercontent.com/Damada42/KlipperBackupHandle/main/handlebackup.sh >/dev/null 2>&1
 wget https://raw.githubusercontent.com/Damada42/KlipperBackupHandle/main/Backup.sh >/dev/null 2>&1
 
-if [ ! -e $filename ]; then
-  touch $filename
-  echo "[variables]">> $filename
-  echo "usbbackupfolder = $usbbackupfolder">> $filename
-  echo "nasbackupfolder = $nasbackupfolder">> $filename
-  echo "logfilesbackupfolder = $logfilesbackupfolder">> $filename
+if [ ! -e $variablefilename ]; then
+  touch $variablefilename
+  echo "[variables]">> $variablefilename
+  echo "backuphandlefolder = $backuphandlefolder">> $variablefilename
+  echo "usbbackupfolder = $usbbackupfolder">> $variablefilename
+  echo "nasbackupfolder = $nasbackupfolder">> $variablefilename
+  echo "logfilesbackupfolder = $logfilesbackupfolder">> $variablefilename
 fi
 
