@@ -15,6 +15,8 @@ if ! [ -z "$(sed -nr "/^\[variables\]/ { :l /^nasbackupfolder[ ]*=/ { s/.*=[ ]*/
   rm -r "$HOME/shares"
 fi
 if ! [ -z "$(sed -nr "/^\[variables\]/ { :l /^logfilesbackupfolder[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" $variablefilename)" ]; then
-  echo "$(sed -nr "/^\[variables\]/ { :l /^logfilesbackupfolder[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" $variablefilename)"
-  rm -r "$(sed -nr "/^\[variables\]/ { :l /^logfilesbackupfolder[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" $variablefilename)"
+  logfilefolder=$(sed -nr "/^\[variables\]/ { :l /^logfilesbackupfolder[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" $variablefilename)
+  echo "$logfilefolder"
+  sudo rm -r "$logfilefolder/*"
+  rm -r "$logfilefolder"
 fi
