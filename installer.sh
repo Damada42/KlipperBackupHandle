@@ -120,12 +120,17 @@ install()
   sudo apt-get -qq install jq -y >/dev/null 2>&1
   sudo apt -qq install zip -y >/dev/null 2>&1
   echo " "
-  echo "######################  Install credentials. ###########################"
+  echo "##############  Install credentials and mount nas. #####################"
   echo "########################################################################"
-  sudo apt-get install cifs-utils -y >/dev/null 2>&1
-  sudo apt-get -qq install jq -y >/dev/null 2>&1
-  sudo apt -qq install zip -y >/dev/null 2>&1
-
+  mkdir $HOME/.credentials
+  cd $HOME/.credentials
+  touch smbcredentials
+  sleep 1s
+  echo "username=$nasuser">> smbcredentials
+  echo "password=$naspassword">> smbcredentials
+  sleep 1s
+  sudo su -c "echo '$mountfoldernas $nasbackupfolder cifs credentials=$HOME/.credentials/smbcredentials,users,uid=1000,gid=1000,x-systemd.automount,x-systemd.requires=network-online.target 0 0' >> $fstabfile"
+  sudo mount-a
   cd $backuphandlefolder
   echo " "
   echo "################## Download and copy Backup scripts ####################"

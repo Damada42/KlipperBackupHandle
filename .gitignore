@@ -36,6 +36,6 @@ nosetests.xml
 .pydevproject
 *.iml
 venv
-clearinstall.sh
-testingscrip.sh
+clear.sh
+spielwiese.sh
 testingScriptRPI.iml
